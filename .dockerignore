@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.env*
+!.env.local.example
+uploads
+.dev-db
+deploy/*
+!deploy/store-entrypoint.sh
+docs
+*.md

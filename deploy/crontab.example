@@ -1,0 +1,7 @@
+# Install with: crontab -e (as the user that runs docker). Adjust the path if you cloned elsewhere.
+COMPOSE=docker compose -f /srv/agrolab/agrolab-store/deploy/docker-compose.yml --project-directory /srv/agrolab/agrolab-store/deploy
+
+# Every hour: the parser re-checks prices, the store pulls changes and checks them
+5 * * * *   $COMPOSE exec -T store node scripts/sync-supplier.mjs --refresh >> /var/log/agrolab-sync.log 2>&1
+# Sunday 02:30: full re-scrape (descriptions, categories), photos to R2, full pull
+30 2 * * 0  $COMPOSE exec -T store node scripts/sync-supplier.mjs --refresh=full --full >> /var/log/agrolab-sync.log 2>&1

@@ -1,0 +1,129 @@
+# Whole production stack on one server. Expected layout on the server:
+#   /srv/agrolab/agrolab-store      this repository
+#   /srv/agrolab/agrolosk-parser    the parser repository
+# Run everything from /srv/agrolab/agrolab-store/deploy (see ../docs/DEPLOY.md).
+name: agrolab
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  postgres:
+    image: public.ecr.aws/docker/library/postgres:17-alpine
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
+      STORE_DB_PASSWORD: ${STORE_DB_PASSWORD:?set STORE_DB_PASSWORD in deploy/.env}
+      PARSER_DB_PASSWORD: ${PARSER_DB_PASSWORD:?set PARSER_DB_PASSWORD in deploy/.env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  parser:
+    build:
+      context: ../../agrolosk-parser
+    restart: unless-stopped
+    logging: *logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: parser
+      POSTGRES_PASSWORD: ${PARSER_DB_PASSWORD}
+      POSTGRES_DB: agrolosk
+      SYNC_CONCURRENCY: ${SYNC_CONCURRENCY:-10}
+      IMAGES_PROCESS_CONCURRENCY: ${IMAGES_PROCESS_CONCURRENCY:-2}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET: ${R2_BUCKET:-}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
+      R2_ENDPOINT_URL: ${R2_ENDPOINT_URL:-}
+
+  store:
+    build:
+      context: ..
+      args:
+        SITE_URL: https://${DOMAIN}
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+        NEXT_PUBLIC_IMAGE_HOSTS: ${NEXT_PUBLIC_IMAGE_HOSTS:-}
+    restart: unless-stopped
+    logging: *logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - store.env
+    environment:
+      DATABASE_URL: postgres://store:${STORE_DB_PASSWORD}@postgres:5432/agrolab_store
+      SITE_URL: https://${DOMAIN}
+      SUPPLIER_API_URL: http://parser:8000/products
+      SUPPLIER_REFRESH_URL: http://parser:8000/sync
+    volumes:
+      - store_image_cache:/app/.next/cache
+      - store_uploads:/app/uploads
+
+  caddy:
+    image: public.ecr.aws/docker/library/caddy:2-alpine
+    restart: unless-stopped
+    logging: *logging
+    depends_on:
+      - store
+    environment:
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in deploy/.env}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  kuma:
+    image: louislam/uptime-kuma:1
+    restart: unless-stopped
+    logging: *logging
+    volumes:
+      - kuma_data:/app/data
+
+  backup:
+    build:
+      context: ./backup
+    restart: unless-stopped
+    logging: *logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_BACKUP_ACCESS_KEY_ID:-${R2_ACCESS_KEY_ID:-}}
+      R2_SECRET_ACCESS_KEY: ${R2_BACKUP_SECRET_ACCESS_KEY:-${R2_SECRET_ACCESS_KEY:-}}
+      R2_BACKUP_BUCKET: ${R2_BACKUP_BUCKET:-}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-30}
+      TELEGRAM_ALERTS_BOT_TOKEN: ${TELEGRAM_ALERTS_BOT_TOKEN:-}
+      TELEGRAM_ALERTS_CHAT_ID: ${TELEGRAM_ALERTS_CHAT_ID:-}
+    volumes:
+      - backups:/backups
+
+volumes:
+  pgdata:
+  store_image_cache:
+  store_uploads:
+  caddy_data:
+  caddy_config:
+  kuma_data:
+  backups:
