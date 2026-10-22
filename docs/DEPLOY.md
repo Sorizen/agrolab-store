@@ -98,6 +98,18 @@ Paste the two lines from `deploy/crontab.example` (hourly price check, Sunday fu
 
 Open `https://status.agrolab.com.ua`, create the Uptime Kuma admin, then add monitors: the site (`https://agrolab.com.ua`), `https://agrolab.com.ua/api/health`, and the parser (`http://parser:8000/health`, Kuma reaches it inside the compose network). Point notifications at the alerts Telegram bot. Details: [`MONITORING.md`](MONITORING.md).
 
+## Running behind a Cloudflare Tunnel (no open ports, e.g. a Raspberry Pi at home)
+
+Instead of Caddy and public ports, `cloudflared` connects out to Cloudflare. Used on the Raspberry Pi (Debian, arm64, 4 GB).
+
+1. Install Docker (`curl -fsSL https://get.docker.com | sh`), add 2 GB swap, put both repositories in `/srv/agrolab`.
+2. In Cloudflare: Networking, Tunnels, Create Tunnel (Docker). Copy the token into `deploy/.env` as `TUNNEL_TOKEN`.
+3. In `deploy/.env` set `COMPOSE_FILE=docker-compose.yml:docker-compose.tunnel.yml`. The override turns Caddy off (profile `caddy`) and starts `cloudflared`.
+4. In the tunnel's Routes add published applications: `agrolab.com.ua` and `www.agrolab.com.ua` to `http://store:3000`, `status.agrolab.com.ua` to `http://kuma:3001`. Delete old `A` records for the same names first; Cloudflare creates the `CNAME` records itself.
+5. Continue from step 5 ("Start") above. HTTPS is Cloudflare's, so step 4 (DNS) is not needed.
+
+HSTS, `nosniff` and the other security headers come from `next.config.mjs` in this mode, and `www` redirects to the bare domain there too.
+
 ## Backups
 
 The `backup` service dumps both databases every night at 03:30 (Kyiv time), keeps 7 days on the server volume and uploads to the backup bucket in R2 for `BACKUP_KEEP_DAYS` days (30 by default). A failure sends a Telegram alert.

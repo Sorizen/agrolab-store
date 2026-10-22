@@ -147,12 +147,12 @@ export default function ContactForm() {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="phone">Номер телефону <span style={{fontSize: '0.8rem', color: 'var(--medium-gray)', fontWeight: 'normal'}}>(вкажіть телефон або email)</span></label>
+                            <label htmlFor="phone">Номер телефону</label>
                             <div style={{ display: 'flex' }}>
                                 <select
                                     disabled
                                     className="form-input"
-                                    style={{ width: '100px', borderRight: 'none', borderRadius: '4px 0 0 4px', background: 'var(--off-white)', appearance: 'none', textAlign: 'center', fontWeight: 'bold', color: 'var(--charcoal)' }}
+                                    style={{ width: '84px', flexShrink: 0, paddingLeft: '0.5rem', paddingRight: '0.5rem', borderRight: 'none', borderRadius: '4px 0 0 4px', background: 'var(--off-white)', appearance: 'none', textAlign: 'center', fontWeight: 'bold', color: 'var(--charcoal)' }}
                                 >
                                     <option>🇺🇦 +38</option>
                                 </select>
@@ -160,7 +160,7 @@ export default function ContactForm() {
                                     type="tel"
                                     id="phone"
                                     className="form-input"
-                                    style={{ borderRadius: '0 4px 4px 0', flex: 1 }}
+                                    style={{ borderRadius: '0 4px 4px 0', flex: 1, minWidth: 0 }}
                                     value={formData.phone}
                                     onChange={e => setFormData({...formData, phone: formatPhone(e.target.value)})}
                                     placeholder="098 000 00 00"
@@ -172,6 +172,7 @@ export default function ContactForm() {
                             <input type="email" id="email" className="form-input" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="taras@example.com" />
                         </div>
                     </div>
+                    <p style={{ margin: '-0.4rem 0 0', fontSize: '0.85rem', color: 'var(--medium-gray)' }}>Достатньо вказати телефон або email.</p>
                 </>
             ) : (
                 <div style={{ padding: '0.5rem 1rem', background: 'var(--off-white)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--extra-light-gray)', color: 'var(--dark-gray)', fontSize: '0.9rem' }}>

@@ -2,6 +2,13 @@
 
 Newest first. Every user-facing release gets an entry here and a matching `version` bump in `package.json`.
 
+## 1.12.0
+
+- Google Merchant Center feed at `/feeds/google.xml` (in-stock and on-order products with price, photos, brand, part number and category), streamed from the database.
+- Security headers (HSTS, nosniff, referrer policy, frame options) and a permanent redirect from `www` to the bare domain.
+- Deployment behind a Cloudflare Tunnel (`deploy/docker-compose.tunnel.yml`).
+- All comments removed from the code.
+
 ## 1.11.0
 
 - Pages "Доставка і оплата" (`/delivery`) and "Повернення та гарантія" (`/returns`), linked from the footer and the sitemap.

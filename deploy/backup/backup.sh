@@ -36,7 +36,7 @@ done
 find "$DIR" -name '*.dump' -mtime +7 -delete
 
 if [ -n "${R2_BACKUP_BUCKET:-}" ] && [ -n "${R2_ACCOUNT_ID:-}" ]; then
-  cutoff=$(date -d "-${BACKUP_KEEP_DAYS:-30} days" +%Y%m%d 2>/dev/null || date -v-"${BACKUP_KEEP_DAYS:-30}"d +%Y%m%d)
+  cutoff=$(date -d "@$(( $(date +%s) - ${BACKUP_KEEP_DAYS:-30} * 86400 ))" +%Y%m%d)
   AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" AWS_DEFAULT_REGION=auto \
     aws s3 ls "s3://$R2_BACKUP_BUCKET/backups/" --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" 2>/dev/null \
     | awk '{print $4}' | while read -r name; do
