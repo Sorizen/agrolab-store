@@ -8,6 +8,8 @@ Newest first. Every user-facing release gets an entry here and a matching `versi
 - Security headers (HSTS, nosniff, referrer policy, frame options) and a permanent redirect from `www` to the bare domain.
 - Deployment behind a Cloudflare Tunnel (`deploy/docker-compose.tunnel.yml`).
 - All comments removed from the code.
+- Supplier photo URLs are ignored; a product is shown only with photos on our own hosts (no more hotlinked, blank or unbranded pictures).
+- Contact form: labels and fields line up, the phone placeholder is no longer cut off.
 
 ## 1.11.0
 
