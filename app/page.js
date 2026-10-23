@@ -130,7 +130,7 @@ export default async function HomePage() {
               </div>
               <Link href="/catalogue" className="lsx-link">Весь каталог <ArrowRight size={18} /></Link>
             </div>
-            <div className="product-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            <div className="product-grid" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
               {popular.map((p, i) => (
                 <div key={p.id} data-reveal style={{ '--reveal-delay': `${i * 0.05}s` }}><ProductCard product={p} /></div>
               ))}
