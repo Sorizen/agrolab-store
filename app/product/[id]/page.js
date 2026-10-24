@@ -119,7 +119,7 @@ export default async function ProductPage({ params }) {
         sku: product.article || String(product.id),
         mpn: product.article || undefined,
         brand: product.brand ? { '@type': 'Brand', name: product.brand } : undefined,
-        category: path.length ? path.map(c => c.name).join(' > ') : undefined,
+        category: 'Vehicles & Parts > Vehicle Parts & Accessories',
         image: product.images.length ? product.images : undefined,
         description: description ? truncate(description, 500) : undefined,
         offers: product.price > 0 ? {
@@ -127,7 +127,27 @@ export default async function ProductPage({ params }) {
             url: productUrl,
             priceCurrency: 'UAH',
             price: product.price,
+            validFrom: new Date().toISOString().slice(0, 10),
             priceValidUntil: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+            itemCondition: 'https://schema.org/NewCondition',
+            shippingDetails: {
+                '@type': 'OfferShippingDetails',
+                shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'UA' },
+                deliveryTime: {
+                    '@type': 'ShippingDeliveryTime',
+                    handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+                    transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+                },
+            },
+            hasMerchantReturnPolicy: {
+                '@type': 'MerchantReturnPolicy',
+                applicableCountry: 'UA',
+                returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+                merchantReturnDays: 14,
+                returnMethod: 'https://schema.org/ReturnByMail',
+                returnFees: 'https://schema.org/ReturnShippingFees',
+                merchantReturnLink: absoluteUrl('/returns'),
+            },
             availability: inStockNow
                 ? 'https://schema.org/InStock'
                 : product.availability === 'on_order' ? 'https://schema.org/PreOrder' : 'https://schema.org/OutOfStock',
