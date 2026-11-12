@@ -117,7 +117,7 @@ PUT /api/orders {"id":5,"status":"Відправлено"}  → { id, status }
 
 ## 4. Telegram alert
 
-Sent to `TELEGRAM_CHAT_ID` for every new order. This is the exact text for the order above:
+Sent to `TELEGRAM_CHAT_ID` (into the topic `TELEGRAM_THREAD_ID`) for every new order, as HTML. The items are an invoice: our price, the supplier's price, the supplier link and the page on our site. Long orders are split across several messages. This is the text for the order above:
 
 ```
 🛒 Нове замовлення #5 · Agrolab
@@ -125,16 +125,28 @@ Sent to `TELEGRAM_CHAT_ID` for every new order. This is the exact text for the o
 👤 Петренко Іван
 📞 +380671234567
 📍 м. Полтава, Полтавська обл., Відділення №12 (до 30 кг на одне місце): вул. Сінна, 2/49
-
-💰 3970 грн · Оплата при отриманні
+💳 Оплата при отриманні
 💬 Потрібна ТТН до обіду
 
-📦 Товари (2):
-• Насос шестерний НШ-32М-3 лівого обертання ×1 — 3450 грн
-   Код: НШ-32М-3
-   https://agrolosk.com.ua/ua/p9000000002-demo.html
-• Ремінь клиновий вентилятора (1250 мм) ×2 — 260 грн
-   Код: 11×10-1250
+───────────────
+📦 Накладна, позицій: 2
+
+1. Насос шестерний НШ-32М-3 лівого обертання
+    Код: НШ-32М-3
+    Наша ціна: 3 450 грн × 1 = 3 450 грн
+    Закупівля: 3 000 грн × 1 = 3 000 грн
+    Постачальник · На сайті
+
+2. Ремінь клиновий вентилятора (1250 мм)
+    Код: 11×10-1250
+    Наша ціна: 260 грн × 2 = 520 грн
+    Закупівля: 220 грн × 2 = 440 грн
+    Постачальник · На сайті
+
+───────────────
+Разом: 3 970 грн
+Закупівля: 3 440 грн
+Різниця: 530 грн
 ```
 
 ## 5. Card payment (Monobank acquiring)

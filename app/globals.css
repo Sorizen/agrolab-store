@@ -3278,6 +3278,13 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); letter-spacing: -0.01
 .admin-toolbar input, .admin-toolbar select {
   padding: 0.55rem 0.75rem; border: 1px solid var(--line); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; background: #fff;
 }
+.admin-toolbar select {
+  -webkit-appearance: none; appearance: none; cursor: pointer; color: var(--ink); line-height: 1.3;
+  padding-right: 2.1rem;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' fill='none' stroke='%236B5D48' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 0.8rem center;
+}
+.admin-toolbar select:hover { border-color: var(--muted); }
+.admin-toolbar select:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
 .admin-toolbar input[type="search"] { flex: 1; min-width: 220px; }
 .admin-pager { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; font-size: 0.9rem; color: var(--muted); }
 .admin-chip { display: inline-block; padding: 0.1rem 0.45rem; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700; margin-right: 0.25rem; white-space: nowrap; }
