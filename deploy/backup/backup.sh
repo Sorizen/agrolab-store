@@ -11,8 +11,12 @@ export PGPASSWORD="$POSTGRES_PASSWORD"
 alert() {
   echo "BACKUP FAILED: $1"
   if [ -n "${TELEGRAM_ALERTS_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_ALERTS_CHAT_ID:-}" ]; then
+    reason=$(printf '%s' "$1" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
     curl -s -m 10 "https://api.telegram.org/bot${TELEGRAM_ALERTS_BOT_TOKEN}/sendMessage" \
-      -d chat_id="$TELEGRAM_ALERTS_CHAT_ID" ${TELEGRAM_ALERTS_THREAD_ID:+-d message_thread_id="$TELEGRAM_ALERTS_THREAD_ID"} -d text="Backup failed: $1" >/dev/null || true
+      -d chat_id="$TELEGRAM_ALERTS_CHAT_ID" ${TELEGRAM_ALERTS_THREAD_ID:+-d message_thread_id="$TELEGRAM_ALERTS_THREAD_ID"} \
+      -d parse_mode=HTML --data-urlencode "text=⚠️ <b>Бекап не вдався</b> · Agrolab
+Крок: ${reason}
+Сервер: $(hostname), $(date '+%d.%m.%Y %H:%M')" >/dev/null || true
   fi
 }
 

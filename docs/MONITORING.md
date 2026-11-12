@@ -14,7 +14,7 @@ docker compose up -d          # Kuma listens on 127.0.0.1:3001
 
 Put it behind Nginx on a subdomain (for example `status.your-domain`) with HTTPS and open it once to create the admin user.
 
-**Alert channel:** Settings → Notifications → Setup Notification → Telegram. Use the **alerts bot** (the one in `TELEGRAM_ALERTS_BOT_TOKEN` / `TELEGRAM_ALERTS_CHAT_ID`), not the orders bot. Tick "Default enabled" so every monitor uses it.
+**Alert channel:** Settings → Notifications → Setup Notification → Telegram. Use the values from `TELEGRAM_ALERTS_BOT_TOKEN` / `TELEGRAM_ALERTS_CHAT_ID`, and put `TELEGRAM_ALERTS_THREAD_ID` into "Message Thread ID" so downtime lands in the same topic as the other technical alerts. Tick "Default enabled" so every monitor uses it.
 
 Monitors to add (Add New Monitor, type HTTP(s)):
 

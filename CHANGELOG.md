@@ -2,6 +2,14 @@
 
 Newest first. Every user-facing release gets an entry here and a matching `version` bump in `package.json`.
 
+## 1.13.0
+
+- Telegram: orders and contact messages go to a forum topic, technical alerts to another (`TELEGRAM_THREAD_ID`, `TELEGRAM_ALERTS_THREAD_ID`); backup failures use the alerts topic too.
+- New-order alert is an invoice: our price, the supplier's price, code, links to the supplier and the product page, totals with the margin. Long orders are split across messages.
+- Price check and contact alerts use the same layout.
+- Contacts: new phone and Telegram handle.
+- Admin: the status filter uses the site's own select style.
+
 ## 1.12.0
 
 - Google Merchant Center feed at `/feeds/google.xml` (in-stock and on-order products with price, photos, brand, part number and category), streamed from the database.
