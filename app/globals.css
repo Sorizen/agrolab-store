@@ -3630,3 +3630,24 @@ body > main { flex: 1 0 auto; }
 .product-badge.badge-order { background: #8a6b1f; color: #fff; }
 .availability-out_of_stock { background: rgba(163, 58, 45, 0.12); color: #8f2f23; }
 .availability-on_order { background: rgba(138, 107, 31, 0.14); color: #6e5516; }
+
+.vis-photos { flex: 0 0 168px; display: flex; justify-content: flex-end; }
+.vis-photos-btn { padding: 4px 8px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; font: inherit; font-size: 0.78rem; color: var(--muted); cursor: pointer; }
+.vis-photos-btn:hover { border-color: var(--muted); }
+.vis-photos-btn.on { border-color: var(--brand); color: var(--brand); font-weight: 600; }
+@media (max-width: 720px) { .vis-photos { display: none; } }
+
+.pp { margin: 1.25rem 0; }
+.pp-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 1rem; margin-bottom: 0.6rem; }
+.pp-head span { font-size: 0.82rem; color: var(--muted); }
+.pp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 0.75rem; }
+.pp-item { position: relative; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; overflow: hidden; }
+.pp-item img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; }
+.pp-remove { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 4px; background: rgba(46, 36, 20, 0.75); color: #fff; cursor: pointer; }
+.pp-remove:hover { background: #a33a2d; }
+.pp-main, .pp-first { display: block; width: 100%; padding: 0.3rem 0.4rem; border: 0; border-top: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 0.74rem; text-align: center; color: var(--muted); }
+.pp-first { cursor: pointer; }
+.pp-first:hover { color: var(--brand); }
+.pp-add { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; min-height: 132px; border: 1px dashed var(--muted); border-radius: var(--radius-sm); font-size: 0.82rem; color: var(--muted); cursor: pointer; }
+.pp-add:hover { border-color: var(--brand); color: var(--brand); }
+.pp-error { margin: 0.5rem 0 0; font-size: 0.85rem; color: #a33a2d; }

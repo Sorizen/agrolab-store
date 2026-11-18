@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Edit, Save, X, Star, Loader2, EyeOff, Lock, ExternalLink, Package } from 'lucide-react';
 import { AVAILABILITY_LABELS } from '@/lib/availability';
+import ProductPhotos from './ProductPhotos';
 
 const formatPrice = (n) => Number(n || 0).toLocaleString('uk-UA', { maximumFractionDigits: 2 });
 
@@ -61,6 +62,9 @@ export default function ProductsTab() {
                 active: data.active !== false,
                 featured: Boolean(data.featured),
                 syncLocked: Boolean(data.syncLocked),
+                images: Array.isArray(data.images) ? data.images : [],
+                imagesLocked: Boolean(data.imagesLocked),
+                photosChanged: false,
             });
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err) {
@@ -97,6 +101,7 @@ export default function ProductsTab() {
                     active: form.active,
                     featured: form.featured,
                     syncLocked: form.syncLocked,
+                    ...(form.photosChanged ? { images: form.images } : {}),
                 }),
             });
             if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || `HTTP ${res.status}`);
@@ -197,6 +202,12 @@ export default function ProductsTab() {
                                 </span>
                             )}
                         </div>
+
+                        <ProductPhotos
+                            images={form.images}
+                            locked={form.imagesLocked || form.photosChanged}
+                            onChange={(images) => set({ images, photosChanged: true })}
+                        />
 
                         <div className="admin-form-actions">
                             <button type="submit" className="btn btn-blue" disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>

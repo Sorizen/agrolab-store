@@ -2,6 +2,14 @@
 
 Newest first. Every user-facing release gets an entry here and a matching `version` bump in `package.json`.
 
+## 1.16.0
+
+- Own photos: a product group (admin "Видимість") or a single product (product form, "Фото") can use only photos uploaded by us. Sync then updates only price and availability for them and never takes the supplier's photos; new products of such a group stay hidden until they get their own photos.
+- Telegram "Алерти": when the supplier has a product of an own-photos group (or a product with locked photos) that has no photo of ours, the product stays hidden and one message lists it (`products.photo_alerted_at` prevents repeats; it is reset when the product leaves the supplier or gets a photo).
+- Product form: upload, remove and reorder photos.
+- Subgroups created by sync inherit the hidden and own-photos state of their parent group.
+- Sync no longer rewrites unchanged photo lists on every pass.
+
 ## 1.15.0
 
 - Admin "Видимість": hide whole product groups (with all subgroups, also for products that arrive later) or single products. Hidden groups disappear from the catalogue, search, sitemap and the Google feed. Products with manual control are not affected.

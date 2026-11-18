@@ -7,7 +7,7 @@ function matches(node, needle) {
     return node.name.toLowerCase().includes(needle) || node.children.some((child) => matches(child, needle));
 }
 
-function Row({ node, depth, needle, expanded, toggleOpen, onToggle, busyId }) {
+function Row({ node, depth, needle, expanded, toggleOpen, onToggle, onTogglePhotos, busyId }) {
     const forced = Boolean(needle);
     const open = forced || expanded.has(node.id);
     const children = needle ? node.children.filter((child) => matches(child, needle)) : node.children;
@@ -25,6 +25,21 @@ function Row({ node, depth, needle, expanded, toggleOpen, onToggle, busyId }) {
                 )}
                 <span className="vis-name">{node.name}</span>
                 <span className="vis-count">{node.visible} із {node.total} на сайті</span>
+                <span className="vis-photos">
+                    {node.ownPhotosInherited ? (
+                        <span className="vis-note">фото: свої (з групи вище)</span>
+                    ) : (
+                        <button
+                            type="button"
+                            className={`vis-photos-btn${node.ownPhotos ? ' on' : ''}`}
+                            disabled={busyId === node.id}
+                            onClick={() => onTogglePhotos(node)}
+                            title="Лише свої фото: синхронізація не бере фото постачальника"
+                        >
+                            {node.ownPhotos ? 'Фото: свої' : 'Фото: постачальника'}
+                        </button>
+                    )}
+                </span>
                 <span className="vis-action">
                     {node.inherited ? (
                         <span className="vis-note">прихована разом із групою вище</span>
@@ -41,13 +56,13 @@ function Row({ node, depth, needle, expanded, toggleOpen, onToggle, busyId }) {
                 </span>
             </div>
             {open && children.map((child) => (
-                <Row key={child.id} node={child} depth={depth + 1} needle={needle} expanded={expanded} toggleOpen={toggleOpen} onToggle={onToggle} busyId={busyId} />
+                <Row key={child.id} node={child} depth={depth + 1} needle={needle} expanded={expanded} toggleOpen={toggleOpen} onToggle={onToggle} onTogglePhotos={onTogglePhotos} busyId={busyId} />
             ))}
         </>
     );
 }
 
-export default function CategoryVisibility({ categories, onToggle, busyId }) {
+export default function CategoryVisibility({ categories, onToggle, onTogglePhotos, busyId }) {
     const [expanded, setExpanded] = useState(() => new Set());
     const [filter, setFilter] = useState('');
     const needle = filter.trim().toLowerCase();
@@ -67,7 +82,7 @@ export default function CategoryVisibility({ categories, onToggle, busyId }) {
             </div>
             <div className="vis-tree">
                 {roots.map((node) => (
-                    <Row key={node.id} node={node} depth={0} needle={needle} expanded={expanded} toggleOpen={toggleOpen} onToggle={onToggle} busyId={busyId} />
+                    <Row key={node.id} node={node} depth={0} needle={needle} expanded={expanded} toggleOpen={toggleOpen} onToggle={onToggle} onTogglePhotos={onTogglePhotos} busyId={busyId} />
                 ))}
                 {roots.length === 0 && <p className="vis-empty">Нічого не знайдено</p>}
             </div>

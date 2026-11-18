@@ -52,6 +52,12 @@ export default function VisibilityTab() {
         send({ categoryId: node.id, hidden: hide }, node.id, (r) => (hide ? `Групу приховано, зникло товарів: ${r.changed}` : `Групу показано, повернулося товарів: ${r.changed}`));
     }
 
+    function togglePhotos(node) {
+        const next = !node.ownPhotos;
+        if (next && !window.confirm(`Для групи «${node.name}» синхронізація більше не братиме фото постачальника: оновлюватимуться лише ціна та наявність. Нові товари цієї групи з'являться на сайті, коли ви додасте їм власні фото. Продовжити?`)) return;
+        send({ categoryId: node.id, ownPhotos: next }, node.id, () => (next ? 'Група переведена на власні фото' : 'Група знову бере фото постачальника'));
+    }
+
     function hideProduct(product) {
         if (!window.confirm(`Приховати товар «${product.title}»?`)) return;
         send({ productId: product.id, hidden: true }, product.id, () => 'Товар приховано');
@@ -71,7 +77,7 @@ export default function VisibilityTab() {
                     <section className="vis-section">
                         <h3>Групи товарів</h3>
                         <p className="vis-hint">Прихована група зникає з каталогу, пошуку, карти сайту та фіду Google разом з усіма підгрупами. Нові товари з цієї групи теж не з'являться. Товари з «Ручним керуванням» не змінюються.</p>
-                        <CategoryVisibility categories={data.categories} onToggle={toggleCategory} busyId={busyId} />
+                        <CategoryVisibility categories={data.categories} onToggle={toggleCategory} onTogglePhotos={togglePhotos} busyId={busyId} />
                     </section>
                     <section className="vis-section">
                         <h3>Окремі товари</h3>

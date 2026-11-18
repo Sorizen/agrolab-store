@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { query } from '@/lib/db';
 import { getMarkupPercent, retailSql } from '@/lib/pricing';
 import { deleteProduct, resetCategoryTreeCache } from '@/lib/data';
-import { categoryVisibilityTree, hiddenCategorySql, setCategoryHidden } from '@/lib/visibility';
+import { categoryVisibilityTree, hiddenCategorySql, setCategoryHidden, setCategoryOwnPhotos } from '@/lib/visibility';
 
 const HIDDEN_PRODUCTS_LIMIT = 200;
 
@@ -33,6 +33,13 @@ export async function PUT(request) {
     try {
         const body = await request.json();
         const hidden = Boolean(body.hidden);
+
+        if (body.categoryId !== undefined && body.ownPhotos !== undefined) {
+            const id = Number(body.categoryId);
+            if (!Number.isSafeInteger(id) || id <= 0) return NextResponse.json({ error: 'Невірна група' }, { status: 400 });
+            await setCategoryOwnPhotos(id, Boolean(body.ownPhotos));
+            return NextResponse.json({ ok: true });
+        }
 
         if (body.categoryId !== undefined) {
             const id = Number(body.categoryId);

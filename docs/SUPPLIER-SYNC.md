@@ -58,6 +58,8 @@ A supplier product is visible only if it has a title, its price is above `PUBLIS
 
 Groups hidden in the admin tab "Видимість" (`categories.hidden`, spread to subgroups as `hidden_effective`) hide their products on top of these rules. The supplier's own decision is kept in `products.supplier_active`; `active` is `supplier_active` and not in a hidden group, written by every sync SQL path and by `applyCategoryVisibility()` (`lib/visibility.js`) when a group is hidden or shown. Products with "Ручне керування" are not touched by group rules.
 
+**Own photos.** `categories.own_photos` (spread to subgroups as `own_photos_effective`) and `products.images_locked` mean: keep `products.images` as it is, never take the supplier's photos. Price, availability and the supplier's status still sync. `supplier_active` is the supplier's decision without the photo rule; `active` additionally needs a photo (unless `PUBLISH_REQUIRE_IMAGE=false`) and a visible group, so a new product in an own-photos group appears only after photos are added in the product form (`PUT /api/products {id, images}` also sets `images_locked`). Only our own hosts and `/uploads/...` are accepted as photo URLs. After every sync `lib/photo-alerts.js` sends one "Алерти" message listing products that the supplier has but that stay hidden for lack of a photo of ours (`products.photo_alerted_at` keeps it to one message per return).
+
 #### Why there's no RabbitMQ between the two
 
 The plan was "cron updates prices → event in RabbitMQ → product service updates itself". With one producer and one consumer running twice a day, `GET /products?updated_since=` already is that event stream:

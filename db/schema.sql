@@ -166,6 +166,10 @@ alter table orders add column if not exists source text not null default 'site';
 
 alter table categories add column if not exists hidden boolean not null default false;
 alter table categories add column if not exists hidden_effective boolean not null default false;
+alter table categories add column if not exists own_photos boolean not null default false;
+alter table categories add column if not exists own_photos_effective boolean not null default false;
+alter table products add column if not exists images_locked boolean not null default false;
+alter table products add column if not exists photo_alerted_at timestamptz;
 alter table products add column if not exists supplier_active boolean;
 update products set supplier_active = active where supplier_id is not null and supplier_active is null;
 

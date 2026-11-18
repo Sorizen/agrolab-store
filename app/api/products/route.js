@@ -3,6 +3,8 @@ import { revalidatePath } from 'next/cache';
 import { query } from '@/lib/db';
 import { getMarkupPercent, retailPrice } from '@/lib/pricing';
 import { getProductById, listProductsAdmin, deleteProduct, updateProduct } from '@/lib/data';
+import { isOptimizable } from '@/lib/images';
+import { refreshProductActive } from '@/lib/visibility';
 
 function revalidateProductPages() {
     revalidatePath('/product/[id]', 'page');
@@ -41,12 +43,22 @@ export async function PUT(request) {
         for (const key of ['price', 'active', 'featured', 'syncLocked']) {
             if (body[key] !== undefined) updates[key] = body[key];
         }
+        if (body.images !== undefined) {
+            const images = Array.isArray(body.images) ? body.images.map((u) => String(u || '').trim()).filter(Boolean) : null;
+            if (!images || images.length > 15 || !images.every(isOptimizable)) {
+                return NextResponse.json({ error: 'Фото мають бути завантажені через адмінку (до 15 шт.)' }, { status: 400 });
+            }
+            updates.images = images;
+            updates.imagesLocked = true;
+        }
+        if (body.imagesLocked !== undefined && updates.imagesLocked === undefined) updates.imagesLocked = Boolean(body.imagesLocked);
         if (updates.syncLocked === false) {
             const { rows } = await query('select supplier_price from products where id = $1', [body.id]);
             if (rows[0]?.supplier_price > 0) updates.price = retailPrice(rows[0].supplier_price, await getMarkupPercent());
             else delete updates.price;
         }
         const saved = await updateProduct(body.id, updates);
+        if (updates.images !== undefined) await refreshProductActive(body.id);
         revalidateProductPages();
         return NextResponse.json(saved);
     } catch (error) {
