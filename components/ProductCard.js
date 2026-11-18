@@ -93,7 +93,7 @@ export default function ProductCard({ product, variant = 'card', priority = fals
 
                 {product.availability !== 'in_stock' && (
                     <div className={`product-badge ${product.availability === 'on_order' ? 'badge-order' : 'badge-out'}`} style={{ position: 'absolute', top: '0.7rem', right: '0.7rem' }}>
-                        {product.availability === 'on_order' ? 'Під замовлення' : 'Немає'}
+                        {product.availability === 'on_order' ? 'Під замовлення' : 'Немає в наявності'}
                     </div>
                 )}
             </Link>

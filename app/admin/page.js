@@ -7,7 +7,8 @@ import OrdersTab from '@/components/admin/OrdersTab';
 import SettingsTab from '@/components/admin/SettingsTab';
 import SupportTab from '@/components/admin/SupportTab';
 import StatsTab from '@/components/admin/StatsTab';
-import { Package, ShoppingCart, LogOut, Settings, MessageSquare, BarChart3 } from 'lucide-react';
+import VisibilityTab from '@/components/admin/VisibilityTab';
+import { Package, ShoppingCart, LogOut, Settings, MessageSquare, BarChart3, EyeOff } from 'lucide-react';
 
 export default function AdminPage() {
     const [activeTab, setActiveTab] = useState('products');
@@ -93,6 +94,25 @@ export default function AdminPage() {
                             <MessageSquare size={18} /> Звернення
                         </button>
                         <button
+                            onClick={() => setActiveTab('visibility')}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '1.2rem',
+                                fontWeight: activeTab === 'visibility' ? 'bold' : 'normal',
+                                color: activeTab === 'visibility' ? 'var(--primary-color)' : 'var(--dark-gray)',
+                                cursor: 'pointer',
+                                borderBottom: activeTab === 'visibility' ? '2px solid var(--primary-color)' : 'none',
+                                paddingBottom: '0.5rem',
+                                marginBottom: '-0.6rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem'
+                            }}
+                        >
+                            <EyeOff size={18} /> Видимість
+                        </button>
+                        <button
                             onClick={() => setActiveTab('stats')}
                             style={{
                                 background: 'none',
@@ -135,6 +155,7 @@ export default function AdminPage() {
                     {activeTab === 'products' && <ProductsTab />}
                     {activeTab === 'orders' && <OrdersTab />}
                     {activeTab === 'support' && <SupportTab />}
+                    {activeTab === 'visibility' && <VisibilityTab />}
                     {activeTab === 'stats' && <StatsTab />}
                     {activeTab === 'settings' && <SettingsTab />}
                 </div>

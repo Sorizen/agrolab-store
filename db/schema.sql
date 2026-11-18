@@ -164,6 +164,11 @@ alter table orders add column if not exists cancel_reason text;
 alter table orders add column if not exists refunded_amount numeric(12,2) not null default 0;
 alter table orders add column if not exists source text not null default 'site';
 
+alter table categories add column if not exists hidden boolean not null default false;
+alter table categories add column if not exists hidden_effective boolean not null default false;
+alter table products add column if not exists supplier_active boolean;
+update products set supplier_active = active where supplier_id is not null and supplier_active is null;
+
 alter table products add column if not exists sales_units integer not null default 0;
 alter table products add column if not exists sales_90d   integer not null default 0;
 create index if not exists products_sales_idx on products (sales_90d desc) where active;

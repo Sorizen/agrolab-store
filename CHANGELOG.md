@@ -2,6 +2,12 @@
 
 Newest first. Every user-facing release gets an entry here and a matching `version` bump in `package.json`.
 
+## 1.15.0
+
+- Admin "Видимість": hide whole product groups (with all subgroups, also for products that arrive later) or single products. Hidden groups disappear from the catalogue, search, sitemap and the Google feed. Products with manual control are not affected.
+- Sync keeps the supplier's own decision in `products.supplier_active`, so a group shown again gets exactly the products the supplier publishes.
+- "Немає в наявності" and "Під замовлення" badges on product cards are solid and readable on photos; the availability label on the product page has more contrast.
+
 ## 1.14.0
 
 - Admin: orders can be added by hand (phone orders): date, recipient, phone, items from the catalogue search (hidden products included) or free-text items, Nova Poshta branch or parcel locker picker, payment, status and tracking number. Such orders are marked "вручну" and count in the sales statistics; free-text items never reach the catalogue.

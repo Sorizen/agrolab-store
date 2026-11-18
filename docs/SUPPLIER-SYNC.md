@@ -56,6 +56,8 @@ Run it by hand: `npm run check:prices` (`-- --quiet` prints without Telegram). E
 
 A supplier product is visible only if it has a title, its price is above `PUBLISH_MIN_PRICE` (default 1: the supplier uses 1 ₴ as a placeholder) and it has at least one photo (`PUBLISH_REQUIRE_IMAGE=false` turns this off). Only photos on our own hosts count (R2 and `NEXT_PUBLIC_IMAGE_HOSTS`): the supplier's own photo URLs are dropped, so a product appears once the parser has processed its photos. Hidden products come back on their own once the supplier fixes the data. Products with "Ручне керування" keep the admin's choice. Rules live in `lib/publish-rules.js`; the SQL fast path for price-only updates repeats them (`PUBLISHABLE_SQL` in `lib/supplier-sync.js`).
 
+Groups hidden in the admin tab "Видимість" (`categories.hidden`, spread to subgroups as `hidden_effective`) hide their products on top of these rules. The supplier's own decision is kept in `products.supplier_active`; `active` is `supplier_active` and not in a hidden group, written by every sync SQL path and by `applyCategoryVisibility()` (`lib/visibility.js`) when a group is hidden or shown. Products with "Ручне керування" are not touched by group rules.
+
 #### Why there's no RabbitMQ between the two
 
 The plan was "cron updates prices → event in RabbitMQ → product service updates itself". With one producer and one consumer running twice a day, `GET /products?updated_since=` already is that event stream:
