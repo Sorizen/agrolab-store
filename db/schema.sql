@@ -162,6 +162,7 @@ alter table orders add column if not exists tracking_number text;
 
 alter table orders add column if not exists cancel_reason text;
 alter table orders add column if not exists refunded_amount numeric(12,2) not null default 0;
+alter table orders add column if not exists source text not null default 'site';
 
 alter table products add column if not exists sales_units integer not null default 0;
 alter table products add column if not exists sales_90d   integer not null default 0;

@@ -2,6 +2,12 @@
 
 Newest first. Every user-facing release gets an entry here and a matching `version` bump in `package.json`.
 
+## 1.14.0
+
+- Admin: orders can be added by hand (phone orders): date, recipient, phone, items from the catalogue search (hidden products included) or free-text items, Nova Poshta branch or parcel locker picker, payment, status and tracking number. Such orders are marked "вручну" and count in the sales statistics; free-text items never reach the catalogue.
+- Admin: manual orders and cancelled orders without a card payment can be deleted from the order details.
+- Admin: selects get proper padding and a custom arrow.
+
 ## 1.13.0
 
 - Telegram: orders and contact messages go to a forum topic, technical alerts to another (`TELEGRAM_THREAD_ID`, `TELEGRAM_ALERTS_THREAD_ID`); backup failures use the alerts topic too.

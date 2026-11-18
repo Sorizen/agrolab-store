@@ -76,7 +76,7 @@ function Combo({ label, value, onType, placeholder, disabled, open, setOpen, loo
 
 const bareCity = (s) => String(s || '').split(',')[0].replace(/^(м|с|смт|сел)\.\s*/i, '').trim();
 
-export default function NovaPoshtaDropdown({ selectedCity, selectedBranch, onSelectCity, onSelectBranch, disabled }) {
+export default function NovaPoshtaDropdown({ selectedCity, selectedBranch, onSelectCity, onSelectBranch, disabled, required = true, branchLabel = 'Відділення або поштомат' }) {
     const [cityText, setCityText] = useState(selectedCity || '');
     const [cityRef, setCityRef] = useState(null);
     const [branchText, setBranchText] = useState(selectedBranch || '');
@@ -97,7 +97,7 @@ export default function NovaPoshtaDropdown({ selectedCity, selectedBranch, onSel
     return (
         <div className="np-picker">
             <Combo
-                label="Місто *"
+                label={required ? 'Місто *' : 'Місто'}
                 value={cityText}
                 placeholder="Почніть вводити назву міста"
                 disabled={disabled}
@@ -114,7 +114,7 @@ export default function NovaPoshtaDropdown({ selectedCity, selectedBranch, onSel
                 renderItem={(item) => <><MapPin size={14} /> {item.name}</>}
             />
             <Combo
-                label="Відділення або поштомат *"
+                label={required ? `${branchLabel} *` : branchLabel}
                 value={branchText}
                 placeholder={ref ? 'Номер або вулиця, наприклад: 12' : 'Спочатку оберіть місто'}
                 disabled={disabled || !ref}

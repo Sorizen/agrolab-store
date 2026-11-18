@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { notifyOrderStatus, TRACKING_PATTERN } from '@/lib/order-mail';
 import { refreshSalesInBackground } from '@/lib/sales';
+import { parseManualOrder } from '@/lib/manual-order';
 
 const PER_PAGE = 50;
 const ORDER_STATUSES = ['Нове', 'В обробці', 'Відправлено', 'Виконано', 'Скасовано'];
@@ -91,6 +92,63 @@ export async function PUT(request) {
         return NextResponse.json({ id: order.id, status: order.status, trackingNumber: order.tracking_number, email });
     } catch (error) {
         console.error('Update order error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function POST(request) {
+    try {
+        const parsed = parseManualOrder(await request.json());
+        if (parsed.error) return NextResponse.json({ error: parsed.error }, { status: 400 });
+        const order = parsed.value;
+
+        const ids = order.items.filter((item) => item.id).map((item) => item.id);
+        let items = order.items;
+        if (ids.length) {
+            const { rows } = await query('select id, title, article from products where id = any($1::bigint[])', [ids]);
+            const known = new Map(rows.map((row) => [Number(row.id), row]));
+            if (ids.some((id) => !known.has(id))) {
+                return NextResponse.json({ error: 'Один із товарів не знайдено в каталозі' }, { status: 400 });
+            }
+            items = items.map((item) => (item.id
+                ? { ...item, title: known.get(item.id).title, article: known.get(item.id).article || item.article }
+                : item));
+        }
+
+        const { rows: [saved] } = await query(
+            `insert into orders (created_at, customer_first_name, customer_last_name, customer_email, customer_phone,
+                delivery_method, delivery_city, delivery_branch, comment, total_amount, status, payment_method,
+                payment_status, items, tracking_number, source)
+             values ($1, $2, $3, $4, $5, 'Нова Пошта', $6, $7, $8, $9, $10, $11, $12, $13, $14, 'manual')
+             returning id`,
+            [
+                order.createdAt, order.firstName, order.lastName, order.email, order.phone, order.city, order.branch,
+                order.comment, order.total, order.status, order.paymentMethod, order.paymentStatus,
+                JSON.stringify(items), order.tracking,
+            ]
+        );
+        refreshSalesInBackground();
+        return NextResponse.json({ id: saved.id });
+    } catch (error) {
+        console.error('Create order error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function DELETE(request) {
+    try {
+        const { id } = await request.json();
+        const { rows: [order] } = await query('select id, status, source, payment_invoice_id from orders where id = $1', [id]);
+        if (!order) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        const removable = order.source === 'manual' || (order.status === 'Скасовано' && !order.payment_invoice_id);
+        if (!removable) {
+            return NextResponse.json({ error: 'Видаляти можна лише замовлення, додані вручну, або скасовані без оплати карткою' }, { status: 400 });
+        }
+        await query('delete from orders where id = $1', [id]);
+        refreshSalesInBackground();
+        return NextResponse.json({ id: order.id });
+    } catch (error) {
+        console.error('Delete order error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

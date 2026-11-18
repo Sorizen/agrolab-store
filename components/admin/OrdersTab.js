@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Plus } from 'lucide-react';
+import ManualOrderForm from './ManualOrderForm';
 
 export default function OrdersTab() {
     const [orders, setOrders] = useState([]);
@@ -14,11 +15,13 @@ export default function OrdersTab() {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState(null);
     const [expandedOrder, setExpandedOrder] = useState(null);
+    const [creating, setCreating] = useState(false);
+    const [reload, setReload] = useState(0);
 
     useEffect(() => {
         fetchOrders();
 
-    }, [page, statusFilter]);
+    }, [page, statusFilter, reload]);
 
     async function fetchOrders() {
         setLoading(true);
@@ -143,6 +146,29 @@ export default function OrdersTab() {
             });
     };
 
+    const canDelete = (order) => order.source === 'manual' || (order.status === 'Скасовано' && !order.payment_invoice_id);
+
+    const deleteOrder = async (order) => {
+        if (!window.confirm(`Видалити замовлення №${order.id} назавжди? Це не можна скасувати.`)) return;
+        setBusy(order.id);
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: order.id }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Не вдалося видалити замовлення');
+            setOrders(prev => prev.filter(o => o.id !== order.id));
+            setPager(prev => ({ ...prev, total: Math.max(0, prev.total - 1) }));
+            setExpandedOrder(null);
+            showMessage(`Замовлення #${order.id} видалено`);
+        } catch (err) {
+            showMessage(err.message, 'error');
+        }
+        setBusy(null);
+    };
+
     const refreshPayment = (order) => paymentAction(order, '/api/orders/refresh-payment', {}, null, data => {
         patchOrder(order.id, { payment_status: data.paymentStatus });
         showMessage(data.changed ? `Статус оплати: ${data.paymentStatus}` : `Без змін (Monobank: ${data.invoiceStatus})`);
@@ -175,7 +201,25 @@ export default function OrdersTab() {
                     {statuses.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
                 <span style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{pager.total.toLocaleString('uk-UA')} замовлень</span>
+                {!creating && (
+                    <button className="btn-small btn-edit" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.5rem 0.85rem', fontSize: '0.88rem' }} onClick={() => setCreating(true)}>
+                        <Plus size={15} /> Додати замовлення
+                    </button>
+                )}
             </div>
+
+            {creating && (
+                <ManualOrderForm
+                    onCancel={() => setCreating(false)}
+                    onCreated={(id) => {
+                        setCreating(false);
+                        setStatusFilter('');
+                        setPage(1);
+                        setReload(n => n + 1);
+                        showMessage(`Замовлення #${id} додано`);
+                    }}
+                />
+            )}
 
             {loading ? (
                 <p>Завантаження замовлень...</p>
@@ -204,6 +248,7 @@ export default function OrdersTab() {
                                             <span style={{ fontWeight: 'bold', letterSpacing: '0.5px' }}>
                                                 #{order.id}
                                             </span>
+                                            {order.source === 'manual' && <small className="order-source">вручну</small>}
                                         </td>
                                         <td>{new Date(order.created_at).toLocaleDateString('uk-UA', { hour: '2-digit', minute: '2-digit' })}</td>
                                         <td>
@@ -218,8 +263,6 @@ export default function OrdersTab() {
                                                 value={order.status}
                                                 onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                                 style={{
-                                                    padding: '0.3rem',
-                                                    borderRadius: '4px',
                                                     border: `1px solid ${getStatusColor(order.status)}`,
                                                     color: getStatusColor(order.status),
                                                     fontWeight: 'bold',
@@ -333,6 +376,12 @@ export default function OrdersTab() {
                                                         <p style={{ margin: '0.5rem 0' }}>Email: {order.customer_email || '—'}</p>
                                                         {order.do_not_call && <p style={{ margin: '0.25rem 0', color: 'var(--sale)', fontWeight: 600 }}>Не телефонувати</p>}
                                                         {order.comment && <p style={{ margin: '0.5rem 0' }}>Коментар: {order.comment}</p>}
+
+                                                        {canDelete(order) && (
+                                                            <div style={{ marginTop: '1.25rem' }}>
+                                                                <button className="btn-small btn-delete" style={{ color: '#dc3545', borderColor: '#dc3545' }} disabled={busy === order.id} onClick={() => deleteOrder(order)}>Видалити замовлення</button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     <div style={{ flex: '2', minWidth: '300px' }}>
                                                         <strong>Товари:</strong>

@@ -115,6 +115,16 @@ GET /api/orders?page=1&status=Нове   → { items: [order...], total, page, p
 PUT /api/orders {"id":5,"status":"Відправлено"}  → { id, status }
 ```
 
+Manual (phone) orders and deletion, same session:
+
+```
+POST   /api/orders {"createdAt","customer":{"firstName","lastName","phone","email","city","branch"},
+                    "items":[{"id"?,"title","article","quantity","price"}],"total"?,"paymentMethod","status","trackingNumber","comment"}  → { id }
+DELETE /api/orders {"id":5}   → { id }   (only `source = 'manual'` orders, or cancelled ones without a card payment)
+```
+
+Required: `phone`, `firstName`, `lastName`, at least one item with `quantity` and `price` (a free-text item also needs `title`). Items without `id` live only inside the order. `orders.source` is `site` or `manual`. No Telegram alert is sent for manual orders.
+
 ## 4. Telegram alert
 
 Sent to `TELEGRAM_CHAT_ID` (into the topic `TELEGRAM_THREAD_ID`) for every new order, as HTML. The items are an invoice: our price, the supplier's price, the supplier link and the page on our site. Long orders are split across several messages. This is the text for the order above:
