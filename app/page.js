@@ -49,7 +49,7 @@ export default async function HomePage() {
               <input
                 name="q"
                 type="search"
-                placeholder="Наприклад: фільтр або 6206"
+                placeholder="Назва або номер деталі"
                 aria-label="Пошук запчастин"
                 autoComplete="off"
               />

@@ -51,7 +51,7 @@ export default function ProfileRegisterPage() {
                         Створіть особистий кабінет, щоб бачити свої замовлення
                     </p>
                     <form onSubmit={handleRegister} className="contact-form">
-                        <div className="form-row" style={{ display: 'flex', gap: '1rem', flexDirection: 'row' }}>
+                        <div className="form-row" style={{ display: 'flex', gap: '1rem' }}>
                             <div className="form-group" style={{ flex: 1 }}>
                                 <input
                                     type="text"

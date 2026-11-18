@@ -2,6 +2,11 @@
 
 Newest first. Every user-facing release gets an entry here and a matching `version` bump in `package.json`.
 
+## 1.16.1
+
+- Fix: photos uploaded through the admin were saved but never served, because the `/uploads/<name>` route was missing. It now serves them with long-lived caching.
+- Mobile pass: admin tabs fit the screen as a grid; admin tables turn into cards on phones; the announcement bar scrolls away so only the 63px nav stays sticky; the menu closes on tap outside and on navigation; legal page headings, profile, registration, cart and contact forms no longer overflow at 320px; catalogue cards keep the price on one line and show two columns on every phone; inputs are 16px on phones (no iOS zoom); larger tap targets; footer in two columns; the visibility tab keeps the photo toggle on phones; drawers use dynamic viewport height.
+
 ## 1.16.0
 
 - Own photos: a product group (admin "Видимість") or a single product (product form, "Фото") can use only photos uploaded by us. Sync then updates only price and availability for them and never takes the supplier's photos; new products of such a group stay hidden until they get their own photos.

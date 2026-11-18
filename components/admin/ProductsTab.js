@@ -135,8 +135,8 @@ export default function ProductsTab() {
         <div>
             {message && (
                 <div
-                    className={`admin-message ${message.type}`}
-                    style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 9999, padding: '1rem', borderRadius: '8px', maxWidth: '400px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}
+                    className={`admin-message admin-toast ${message.type}`}
+                    style={{ padding: '1rem', borderRadius: '8px', maxWidth: '400px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}
                 >
                     <div style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{message.text}</div>
                     <button onClick={() => setMessage(null)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0 }}>
@@ -230,7 +230,7 @@ export default function ProductsTab() {
             </div>
 
             <div className="admin-table-wrapper">
-                <table className="admin-table">
+                <table className="admin-table admin-table-cards admin-table-products">
                     <thead>
                         <tr>
                             <th>Фото</th>
@@ -245,7 +245,7 @@ export default function ProductsTab() {
                     <tbody>
                         {list.items.map(product => (
                             <tr key={product.id} style={{ opacity: product.active ? 1 : 0.55 }}>
-                                <td>
+                                <td className="pt-photo">
                                     <div className="table-thumb">
                                         {product.images && product.images.length > 0 ? (
                                             <img src={product.images[0]} alt="" loading="lazy" />
@@ -254,7 +254,7 @@ export default function ProductsTab() {
                                         )}
                                     </div>
                                 </td>
-                                <td style={{ maxWidth: '360px' }}>
+                                <td className="pt-title" style={{ maxWidth: '360px' }}>
                                     <strong>{product.title}</strong>
                                     <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
                                         #{product.id}{product.article ? ` · ${product.article}` : ''}{product.brand ? ` · ${product.brand}` : ''}
@@ -264,20 +264,20 @@ export default function ProductsTab() {
                                         {product.syncLocked && <span className="admin-chip admin-chip-locked">Ручне керування</span>}
                                     </div>
                                 </td>
-                                <td style={{ whiteSpace: 'nowrap' }}>
+                                <td className="pt-price" style={{ whiteSpace: 'nowrap' }}>
                                     {product.price > 0 ? `₴ ${formatPrice(product.price)}` : 'За запитом'}
                                     {product.supplierPrice != null && (
                                         <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>пост.: ₴ {formatPrice(product.supplierPrice)}</div>
                                     )}
                                 </td>
-                                <td>
+                                <td className="pt-stock">
                                     <span className={product.availability === 'in_stock' ? 'stock-ok' : product.availability === 'out_of_stock' ? 'stock-zero' : ''} style={product.availability === 'on_order' ? { color: 'var(--gold-deep)', fontWeight: 600 } : undefined}>
                                         {AVAILABILITY_LABELS[product.availability] || product.availability}
                                     </span>
                                 </td>
-                                <td style={{ maxWidth: '200px', fontSize: '0.85rem' }}>{product.category}</td>
-                                <td>{product.featured ? <Star size={16} fill="var(--gold)" color="var(--gold)" /> : '—'}</td>
-                                <td>
+                                <td className="pt-cat" style={{ maxWidth: '200px', fontSize: '0.85rem' }}>{product.category}</td>
+                                <td className="pt-star">{product.featured ? <Star size={16} fill="var(--gold)" color="var(--gold)" /> : '—'}</td>
+                                <td className="pt-actions">
                                     <div className="admin-actions">
                                         <button onClick={() => startEdit(product.id)} className="btn-small btn-edit" title="Редагувати"><Edit size={16} /></button>
                                         <button onClick={() => handleHide(product)} className="btn-small btn-delete" title="Сховати">

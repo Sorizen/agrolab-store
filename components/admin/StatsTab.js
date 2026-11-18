@@ -41,18 +41,18 @@ export default function StatsTab() {
                     <p style={{ color: 'var(--muted)' }}>Продажів ще немає.</p>
                 ) : (
                     <div className="admin-table-wrapper" style={{ overflowX: 'auto' }}>
-                        <table className="admin-table">
+                        <table className="admin-table admin-table-cards">
                             <thead><tr><th>#</th><th>Товар</th><th>90 днів, шт.</th><th>Всього, шт.</th></tr></thead>
                             <tbody>
                                 {stats.top.map((p, i) => (
                                     <tr key={p.id}>
-                                        <td>{i + 1}</td>
+                                        <td data-label="#">{i + 1}</td>
                                         <td>
                                             <strong>{p.title}</strong>
                                             {p.article && <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>Код: {p.article}</div>}
                                         </td>
-                                        <td>{p.sales_90d}</td>
-                                        <td>{p.sales_units}</td>
+                                        <td data-label="90 днів, шт.">{p.sales_90d}</td>
+                                        <td data-label="Всього, шт.">{p.sales_units}</td>
                                     </tr>
                                 ))}
                             </tbody>

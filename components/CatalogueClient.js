@@ -207,7 +207,7 @@ export default function CatalogueClient({ items, total, page, pages, filters, ca
                             <Search size={17} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--medium-gray)', pointerEvents: 'none' }} />
                             <input
                                 type="search"
-                                placeholder="Назва або код запчастини"
+                                placeholder="Назва або код"
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                                 className="search-input"

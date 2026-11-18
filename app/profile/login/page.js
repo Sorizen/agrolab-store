@@ -48,7 +48,6 @@ export default function ProfileLoginPage() {
                                 onChange={e => setEmail(e.target.value)}
                                 placeholder="Ваш Email"
                                 required
-                                autoFocus
                             />
                         </div>
                         <div className="form-group">

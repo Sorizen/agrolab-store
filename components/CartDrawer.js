@@ -44,7 +44,7 @@ export default function CartDrawer() {
                             {cart.map((item) => (
                                 <div key={item.cartKey} className="drawer-item">
                                     <div className="drawer-item-img">
-                                        <Photo src={item.images?.[0] || '/images/placeholder.jpg'} alt={item.title} sizes="72px" width={144} height={144} />
+                                        {item.images?.[0] && <Photo src={item.images[0]} alt={item.title} sizes="72px" width={144} height={144} />}
                                     </div>
                                     <div className="drawer-item-details">
                                         <h4>{item.title}</h4>

@@ -44,7 +44,12 @@ function Combo({ label, value, onType, placeholder, disabled, open, setOpen, loo
                     disabled={disabled}
                     autoComplete="off"
                     onChange={(e) => { onType(e.target.value); setOpen(true); }}
-                    onFocus={() => setOpen(true)}
+                    onFocus={(e) => {
+                        setOpen(true);
+                        if (window.matchMedia('(max-width: 768px)').matches) {
+                            e.currentTarget.closest('.np-field')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                        }
+                    }}
                     onBlur={() => setTimeout(() => setOpen(false), 150)}
                     onKeyDown={onKeyDown}
                     role="combobox"

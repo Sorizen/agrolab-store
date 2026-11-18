@@ -229,7 +229,7 @@ export default function OrdersTab() {
                 </p>
             ) : (
                 <div className="admin-table-wrapper" style={{ overflowX: 'auto' }}>
-                    <table className="admin-table">
+                    <table className="admin-table admin-table-cards">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -250,15 +250,15 @@ export default function OrdersTab() {
                                             </span>
                                             {order.source === 'manual' && <small className="order-source">вручну</small>}
                                         </td>
-                                        <td>{new Date(order.created_at).toLocaleDateString('uk-UA', { hour: '2-digit', minute: '2-digit' })}</td>
-                                        <td>
+                                        <td data-label="Дата">{new Date(order.created_at).toLocaleDateString('uk-UA', { hour: '2-digit', minute: '2-digit' })}</td>
+                                        <td data-label="Клієнт">
                                             <strong>{order.customer_first_name} {order.customer_last_name}</strong><br/>
                                             <span style={{ fontSize: '0.85rem' }}>
                                                 {(order.customer_phone || '').startsWith('+') ? order.customer_phone : `+380 ${order.customer_phone || ''}`}
                                             </span>
                                         </td>
-                                        <td><strong>₴{order.total_amount}</strong></td>
-                                        <td>
+                                        <td data-label="Сума"><strong>₴{order.total_amount}</strong></td>
+                                        <td data-label="Статус">
                                             <select
                                                 value={order.status}
                                                 onChange={(e) => handleStatusChange(order.id, e.target.value)}

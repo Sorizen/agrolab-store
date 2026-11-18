@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Form from 'next/form';
 import { usePathname } from 'next/navigation';
@@ -12,10 +12,24 @@ const DEFAULT_ANNOUNCEMENT = 'Швидка доставка Новою Пошт�
 
 export default function Navbar({ announcement }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef(null);
   const pathname = usePathname();
   const { cartCount, isMounted, openCart } = useCart();
 
   const announceText = announcement === undefined ? DEFAULT_ANNOUNCEMENT : announcement;
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const closeOutside = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) setMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOutside);
+    return () => document.removeEventListener('pointerdown', closeOutside);
+  }, [menuOpen]);
 
   const links = [
     { href: '/catalogue', label: 'Каталог' },
@@ -24,7 +38,7 @@ export default function Navbar({ announcement }) {
   ];
 
   return (
-    <header className="header">
+    <>
       {announceText ? (
         <div className="ls-announce">
           <div className="ls-announce-inner">
@@ -34,66 +48,69 @@ export default function Navbar({ announcement }) {
         </div>
       ) : null}
 
-      <div className="container">
-        <nav className="nav">
-          <Link href="/" className="logo" aria-label={`${site.name} — головна`}>
-            <img src="/images/agrolab-logo.png" alt={site.name} className="logo-image" width="57" height="56" />
-          </Link>
-
-          <Form action="/catalogue" className="nav-search hide-on-mobile" role="search">
-            <Search size={16} className="nav-search-icon" />
-            <input name="q" type="search" placeholder="Пошук за назвою або кодом" aria-label="Пошук товарів" autoComplete="off" />
-          </Form>
-
-          <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
-            <li className="nav-links-search">
-              <Form action="/catalogue" role="search" onSubmit={() => setMenuOpen(false)}>
-                <input name="q" type="search" placeholder="Пошук запчастин…" aria-label="Пошук товарів" />
-              </Form>
-            </li>
-            {links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={pathname === link.href ? 'active' : ''}
-                  onClick={() => {
-                    setMenuOpen(false);
-                    window.scrollTo(0, 0);
-                  }}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <div className="nav-actions">
-            <a href={`tel:${site.phone}`} className="nav-phone-chip hide-on-mobile">
-              <Phone size={15} />
-              {site.phoneDisplay}
-            </a>
-            <button className="cart-icon" onClick={openCart} title="Кошик" aria-label="Кошик">
-              <ShoppingCart size={22} />
-              {isMounted && cartCount > 0 && (
-                <span className="cart-badge" key={cartCount}>{cartCount}</span>
-              )}
-            </button>
-            <Link href="/profile" className="cart-icon" title="Кабінет" aria-label="Особистий кабінет">
-              <User size={22} />
+      <header className="header">
+        <div className="container">
+          <nav className="nav" ref={navRef}>
+            <Link href="/" className="logo" aria-label={`${site.name} — головна`}>
+              <img src="/images/agrolab-logo.png" alt={site.name} className="logo-image" width="57" height="56" />
             </Link>
-          </div>
 
-          <button
-            className="hamburger"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Меню"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </nav>
-      </div>
-    </header>
+            <Form action="/catalogue" className="nav-search hide-on-mobile" role="search">
+              <Search size={16} className="nav-search-icon" />
+              <input name="q" type="search" placeholder="Пошук за назвою або кодом" aria-label="Пошук товарів" autoComplete="off" />
+            </Form>
+
+            <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
+              <li className="nav-links-search">
+                <Form action="/catalogue" role="search" onSubmit={() => setMenuOpen(false)}>
+                  <input name="q" type="search" placeholder="Пошук запчастин…" aria-label="Пошук товарів" />
+                </Form>
+              </li>
+              {links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={pathname === link.href ? 'active' : ''}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      window.scrollTo(0, 0);
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <div className="nav-actions">
+              <a href={`tel:${site.phone}`} className="nav-phone-chip hide-on-mobile">
+                <Phone size={15} />
+                {site.phoneDisplay}
+              </a>
+              <button className="cart-icon" onClick={openCart} title="Кошик" aria-label="Кошик">
+                <ShoppingCart size={22} />
+                {isMounted && cartCount > 0 && (
+                  <span className="cart-badge" key={cartCount}>{cartCount}</span>
+                )}
+              </button>
+              <Link href="/profile" className="cart-icon" title="Кабінет" aria-label="Особистий кабінет">
+                <User size={22} />
+              </Link>
+            </div>
+
+            <button
+              className="hamburger"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Меню"
+              aria-expanded={menuOpen}
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </nav>
+        </div>
+      </header>
+    </>
   );
 }

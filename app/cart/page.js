@@ -260,7 +260,7 @@ export default function CartPage() {
 
                 <div className="cart-layout">
 
-                    <div className="cart-items" style={{ background: 'var(--off-white)', padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
+                    <div className="cart-items" style={{ background: 'var(--off-white)', padding: 'clamp(1rem, 4vw, 1.5rem)', borderRadius: 'var(--radius-md)' }}>
                         <h2 style={{ marginBottom: '1rem' }}>Кошик</h2>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             {cart.map(item => (
@@ -284,7 +284,7 @@ export default function CartPage() {
                                         onDecrease={() => updateQuantity(item.cartKey, item.quantity - 1)}
                                         onIncrease={() => updateQuantity(item.cartKey, item.quantity + 1)}
                                     />
-                                    <button type="button" onClick={() => removeFromCart(item.cartKey)} className="btn btn-outline" style={{ borderColor: '#dc3545', color: '#dc3545', padding: '0.3rem 0.5rem' }}>
+                                    <button type="button" onClick={() => removeFromCart(item.cartKey)} className="btn btn-outline cart-trash" style={{ borderColor: '#dc3545', color: '#dc3545', padding: '0.3rem 0.5rem' }}>
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -348,7 +348,7 @@ export default function CartPage() {
                                     <select
                                         disabled
                                         className="form-input"
-                                        style={{ width: '100px', borderRight: 'none', borderRadius: '4px 0 0 4px', background: 'var(--off-white)', appearance: 'none', textAlign: 'center', fontWeight: 'bold', color: 'var(--charcoal)' }}
+                                        style={{ width: '84px', flex: 'none', borderRight: 'none', borderRadius: '4px 0 0 4px', background: 'var(--off-white)', appearance: 'none', textAlign: 'center', fontWeight: 'bold', color: 'var(--charcoal)' }}
                                     >
                                         <option>🇺🇦 +38</option>
                                     </select>

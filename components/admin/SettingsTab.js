@@ -194,24 +194,24 @@ export default function SettingsTab() {
 
                 {overview?.runs?.length > 0 ? (
                     <div className="admin-table-wrapper" style={{ overflowX: 'auto' }}>
-                        <table className="admin-table">
+                        <table className="admin-table admin-table-cards">
                             <thead>
                                 <tr><th>#</th><th>Початок</th><th>Тип</th><th>Статус</th><th>Отримано</th><th>Нових</th><th>Змінено</th><th>Приховано</th></tr>
                             </thead>
                             <tbody>
                                 {overview.runs.map(r => (
                                     <tr key={r.id} title={r.message || ''}>
-                                        <td>{r.id}</td>
-                                        <td style={{ whiteSpace: 'nowrap' }}>{new Date(r.started_at).toLocaleString('uk-UA')}</td>
-                                        <td>{RUN_MODES[r.mode] || r.mode}</td>
-                                        <td style={{ color: r.status === 'error' ? 'var(--sale)' : r.status === 'running' ? 'var(--gold-deep)' : 'var(--brand)', fontWeight: 600 }}>
+                                        <td data-label="#">{r.id}</td>
+                                        <td data-label="Початок" style={{ whiteSpace: 'nowrap' }}>{new Date(r.started_at).toLocaleString('uk-UA')}</td>
+                                        <td data-label="Тип">{RUN_MODES[r.mode] || r.mode}</td>
+                                        <td data-label="Статус" style={{ color: r.status === 'error' ? 'var(--sale)' : r.status === 'running' ? 'var(--gold-deep)' : 'var(--brand)', fontWeight: 600 }}>
                                             {r.status === 'ok' ? 'OK' : r.status === 'running' ? 'Виконується…' : 'Помилка'}
                                             {r.message && <div style={{ fontWeight: 400, fontSize: '0.78rem', color: 'var(--muted)', maxWidth: '260px' }}>{r.message}</div>}
                                         </td>
-                                        <td>{r.received}</td>
-                                        <td>{r.inserted}</td>
-                                        <td>{r.updated}</td>
-                                        <td>{r.hidden}</td>
+                                        <td data-label="Отримано">{r.received}</td>
+                                        <td data-label="Нових">{r.inserted}</td>
+                                        <td data-label="Змінено">{r.updated}</td>
+                                        <td data-label="Приховано">{r.hidden}</td>
                                     </tr>
                                 ))}
                             </tbody>
